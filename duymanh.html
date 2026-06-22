@@ -2,47 +2,54 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { background-color: #0a0c10; color: #fff; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        body { background-color: #0a0c10; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
         .container { width: 360px; background: #141a25; padding: 25px; border-radius: 30px; border: 1px solid #1e293b; }
-        
         .label { color: #64748b; font-size: 10px; font-weight: bold; margin: 15px 0 8px 0; display: block; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn { padding: 12px; border-radius: 15px; border: 1px solid #334155; background: #1e293b; color: white; cursor: pointer; text-align: center; }
         .btn.active { border-color: #38bdf8; background: #1e3a5a; color: #38bdf8; }
         
-        select { width: 100%; padding: 15px; border-radius: 15px; background: #1e293b; color: white; border: 1px solid #334155; }
+        select { width: 100%; padding: 15px; border-radius: 15px; background: #1e293b; color: white; border: 1px solid #334155; margin-bottom: 5px; }
         
         .btn-find { width: 100%; padding: 18px; margin-top: 20px; border-radius: 15px; border: none; background: linear-gradient(90deg, #38bdf8, #2563eb); color: white; font-weight: bold; cursor: pointer; }
         
-        /* Hiệu ứng Phân tích AI */
         #aiLoading { display: none; margin-top: 20px; text-align: center; }
         .progress-bar { width: 100%; height: 6px; background: #1e293b; border-radius: 3px; margin-top: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: #38bdf8; width: 0%; transition: width 2s linear; }
         
-        /* Kết quả */
         #resultArea { display: none; margin-top: 20px; }
-        .res-item { background: #1e293b; padding: 12px; margin-bottom: 8px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .res-item { background: #1e293b; padding: 12px; margin-bottom: 8px; border-radius: 12px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <span class="label">HỆ ĐIỀU HÀNH</span>
-    <div class="grid-2">
-        <button class="btn active" onclick="this.classList.toggle('active')">iOS</button>
-        <button class="btn" onclick="this.classList.toggle('active')">Android</button>
+    <div class="grid-2" id="osGroup">
+        <button class="btn active" onclick="selectSingle(this, 'osGroup')">iOS</button>
+        <button class="btn" onclick="selectSingle(this, 'osGroup')">Android</button>
     </div>
 
     <span class="label">DÒNG MÁY</span>
     <select id="phoneSelect">
-        <option value="iphone13">iPhone 13 Pro Max</option>
-        <option value="iphoneXS">iPhone XS</option>
+        <option>iPhone 13 Pro Max</option>
+        <option>iPhone 15 Pro</option>
+        <option>Samsung S23 Ultra</option>
     </select>
 
-    <button class="btn-find" id="searchBtn" onclick="startAnalysis()">🔍 TÌM ĐỘ NHẠY</button>
+    <span class="label">TÌNH TRẠNG (CHỌN NHIỀU)</span>
+    <div class="grid-2">
+        <button class="btn" onclick="this.classList.toggle('active')">Lệch Đầu</button>
+        <button class="btn" onclick="this.classList.toggle('active')">Lạc Đạn</button>
+        <button class="btn" onclick="this.classList.toggle('active')">Giật Tâm</button>
+        <button class="btn" onclick="this.classList.toggle('active')">Nặng Tâm</button>
+        <button class="btn" onclick="this.classList.toggle('active')">Rung Tay</button>
+        <button class="btn" onclick="this.classList.toggle('active')">Trượt Địch</button>
+    </div>
+
+    <button class="btn-find" id="searchBtn" onclick="startAnalysis()">TÌM ĐỘ NHẠY</button>
 
     <div id="aiLoading">
         <span style="font-size: 12px; color: #38bdf8;">Đang phân tích AI...</span>
@@ -56,21 +63,21 @@
 </div>
 
 <script>
-    function startAnalysis() {
-        const btn = document.getElementById('searchBtn');
-        const loading = document.getElementById('aiLoading');
-        const progress = document.getElementById('progress');
-        const resultArea = document.getElementById('resultArea');
+    function selectSingle(btn, groupId) {
+        document.querySelectorAll(`#${groupId} .btn`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
-        btn.style.display = 'none';
-        loading.style.display = 'block';
-        progress.style.width = '100%';
+    function startAnalysis() {
+        document.getElementById('searchBtn').style.display = 'none';
+        document.getElementById('aiLoading').style.display = 'block';
+        document.getElementById('progress').style.width = '100%';
 
         setTimeout(() => {
-            loading.style.display = 'none';
-            resultArea.style.display = 'block';
+            document.getElementById('aiLoading').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'block';
             showResults();
-        }, 2000); // Đợi 2 giây
+        }, 2000);
     }
 
     function showResults() {
@@ -78,8 +85,8 @@
         const list = document.getElementById('resList');
         list.innerHTML = Object.entries(data).map(([k, v]) => `
             <div class="res-item">
-                <span style="color:#94a3b8; font-size:13px;">${k}</span>
-                <span style="color:#38bdf8; font-weight:bold; font-size:18px;">${v}</span>
+                <span style="color:#94a3b8">${k}</span>
+                <span style="color:#38bdf8; font-weight:bold">${v}</span>
             </div>
         `).join('');
     }
